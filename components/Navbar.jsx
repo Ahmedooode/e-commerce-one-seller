@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { assets, CartIcon } from "@/assets/assets";
+import { assets, BagIcon, BoxIcon, CartIcon, HomeIcon } from "@/assets/assets";
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
@@ -54,6 +54,13 @@ const Navbar = () => {
                   onClick={() => router.push("/cart ")}
                 />
               </UserButton.MenuItems>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="My Orders"
+                  labelIcon={<BagIcon />}
+                  onClick={() => router.push("/orders ")}
+                />
+              </UserButton.MenuItems>
             </UserButton>
           </>
         ) : (
@@ -76,13 +83,41 @@ const Navbar = () => {
             Seller Dashboard
           </button>
         )}
-        <button
-          onClick={openSignIn}
-          className="flex items-center gap-2 hover:text-gray-900 transition"
-        >
-          <Image src={assets.user_icon} alt="user icon" />
-          Account
-        </button>
+        {user ? (
+          <>
+            <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="Home"
+                  labelIcon={<HomeIcon />}
+                  onClick={() => router.push("/ ")}
+                />
+              </UserButton.MenuItems>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="Products"
+                  labelIcon={<BoxIcon />}
+                  onClick={() => router.push("/all-products ")}
+                />
+              </UserButton.MenuItems>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="My Orders"
+                  labelIcon={<BagIcon />}
+                  onClick={() => router.push("/orders ")}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          </>
+        ) : (
+          <button
+            onClick={openSignIn}
+            className="flex items-center gap-2 hover:text-gray-900 transition"
+          >
+            <Image src={assets.user_icon} alt="user icon" />
+            Account
+          </button>
+        )}
       </div>
     </nav>
   );

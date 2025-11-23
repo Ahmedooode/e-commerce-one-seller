@@ -14,14 +14,15 @@ cloudinary.config({
 
 export async function POST(request) {
   try {
+    // Authenticate the seller
     const { userId } = getAuth(request);
-
+    // Is this user a seller?
     const isSeller = await authSeller(userId);
 
     if (!isSeller) {
       return NextResponse.json({ success: false, message: "not authorized" });
     }
-
+    // Read all product data
     const formData = await request.formData();
 
     const name = formData.get("name");
@@ -29,6 +30,16 @@ export async function POST(request) {
     const category = formData.get("category");
     const price = formData.get("price");
     const offerPrice = formData.get("offerPrice");
+
+    // For each image file:
+
+    //      1.Convert the image into a buffer
+    //      2.Upload it to Cloudinary using an upload stream
+    //      3.Cloudinary returns an object containing:
+    //          - secure_url (the final image URL)
+    //          - image transformations
+    //          - metadata
+    // These secure URLs are saved in image[].
 
     const files = formData.getAll("images");
 
@@ -62,6 +73,8 @@ export async function POST(request) {
     );
 
     const image = result.map((result) => result.secure_url);
+
+    // Save product in MongoDB :-
     await connectDB();
     const newProduct = await Product.create({
       userId,
@@ -73,6 +86,8 @@ export async function POST(request) {
       image,
       date: Date.now(),
     });
+
+    // Send a Response Back If everything works
     return NextResponse.json({
       success: true,
       message: "Upload  successful",
@@ -82,3 +97,9 @@ export async function POST(request) {
     return NextResponse.json({ success: false, message: error.message });
   }
 }
+// After API success:(Back to Seller UI add-product):
+
+//    - The form reset
+//    - Images are cleared
+//    - Toast says Upload successful
+//    - Product appears in the database and can be displayed in the shop

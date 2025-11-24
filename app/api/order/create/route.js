@@ -13,10 +13,16 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "Invalid data" });
     }
     // calculate amount using items
-    const amount = await items.reduce(async (acc, item) => {
+    // const amount = await items.reduce(async (acc, item) => {
+    //   const product = await Product.findById(item.product);
+    //   return (await acc) + product.offerPrice * item.quantity;
+    // }, 0);
+    let amount = 0;
+    for (const item of items) {
       const product = await Product.findById(item.product);
-      return (await acc) + product.offerPrice * item.quantity;
-    }, 0);
+      if (!product) throw new Error("Product not found");
+      amount += product.offerPrice * item.quantity;
+    }
 
     await inngest.send({
       name: "order/created",
